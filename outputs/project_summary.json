@@ -1,0 +1,137 @@
+{
+    "dataset": {
+        "total_rows": 4160,
+        "departments": 5,
+        "unique_professors": 492,
+        "sentiment_dist": {
+            "positive": 2485,
+            "negative": 1153,
+            "neutral": 522
+        }
+    },
+    "classification": {
+        "Logistic Regression": {
+            "accuracy": 0.7692,
+            "f1_macro": 0.6805,
+            "f1_weighted": 0.7778
+        },
+        "Linear SVM": {
+            "accuracy": 0.774,
+            "f1_macro": 0.6648,
+            "f1_weighted": 0.7747
+        },
+        "Naive Bayes": {
+            "accuracy": 0.732,
+            "f1_macro": 0.6211,
+            "f1_weighted": 0.7355
+        },
+        "Random Forest": {
+            "accuracy": 0.7656,
+            "f1_macro": 0.5745,
+            "f1_weighted": 0.7292
+        },
+        "Gradient Boosting": {
+            "accuracy": 0.7584,
+            "f1_macro": 0.6041,
+            "f1_weighted": 0.7408
+        }
+    },
+    "clustering": {
+        "algorithm": "KMeans",
+        "n_clusters": 5,
+        "silhouette_score": 0.0151,
+        "cluster_names": {
+            "0": "Exam & Test Difficulty",
+            "1": "General Professor Praise",
+            "2": "Teaching Style & Clarity",
+            "3": "Math & STEM Courses",
+            "4": "Workload & Assignments"
+        },
+        "cluster_keywords": {
+            "0": [
+                "ability",
+                "abnormal",
+                "absolute",
+                "absent",
+                "absolutely loved",
+                "accept",
+                "academic",
+                "advise",
+                "adult",
+                "adorable",
+                "algebra",
+                "anatomy"
+            ],
+            "1": [
+                "ability",
+                "absolutely loved",
+                "able",
+                "absolute",
+                "absent",
+                "ace",
+                "actually learn",
+                "advanced",
+                "academic",
+                "active",
+                "accent",
+                "actual"
+            ],
+            "2": [
+                "ability",
+                "absolutely",
+                "absolutely horrible",
+                "absolute",
+                "act",
+                "absent",
+                "able",
+                "advanced",
+                "accent",
+                "alot",
+                "american",
+                "advise"
+            ],
+            "3": [
+                "ability",
+                "accent",
+                "accessible",
+                "aced",
+                "afraid",
+                "add",
+                "addition",
+                "acts",
+                "advantage",
+                "actually",
+                "answering",
+                "activities"
+            ],
+            "4": [
+                "ability",
+                "able",
+                "abnormal",
+                "ace",
+                "active",
+                "adds",
+                "academic",
+                "accept",
+                "absolutely loved",
+                "adorable",
+                "agree",
+                "ago"
+            ]
+        }
+    },
+    "recommender": {
+        "SVD (Matrix Factorization)": {
+            "RMSE": 1.278,
+            "MAE": 1.0874
+        },
+        "KNN User-Based": {
+            "RMSE": 1.4345,
+            "MAE": 1.2508
+        },
+        "NMF": {
+            "RMSE": 1.4337,
+            "MAE": 1.2501
+        }
+    }
+}
