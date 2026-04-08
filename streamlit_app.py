@@ -409,7 +409,7 @@ elif page == "📊 Analytics":
 
         # Load saved summary if available
         try:
-            with open('project_summary.json') as f:
+            with open('outputs/project_summary.json') as f:
                 summary = json.load(f)
             clf = summary['classification']
             perf_df = pd.DataFrame(clf).T
