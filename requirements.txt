@@ -7,7 +7,6 @@ wordcloud
 scikit-learn
 imbalanced-learn
 spacy
-scikit-surprise
 streamlit
 joblib
 scipy
