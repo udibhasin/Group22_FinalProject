@@ -20,6 +20,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
+import spacy
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    from spacy.cli import download
+    download("en_core_web_sm")
+    nlp = spacy.load("en_core_web_sm")
 
 # ── Page config ─────────────────────────────────────────────────
 st.set_page_config(
@@ -363,8 +370,6 @@ elif page == "🔮 Sentiment Predictor":
                     st.progress(float(prob), text=f"{cls.capitalize()}: {prob*100:.1f}%")
 
             # Also run aspect extraction
-            import spacy
-            nlp = spacy.load("en_core_web_sm")
             ASPECT_KEYWORDS = {
                 'exams':     ['exam', 'test', 'quiz', 'midterm', 'final'],
                 'grading':   ['grade', 'grading', 'rubric', 'score', 'mark'],
