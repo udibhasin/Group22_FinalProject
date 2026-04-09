@@ -75,6 +75,59 @@ def summarize_reviews(reviews_df):
     if avg_rating and not np.isnan(avg_rating):
         summary += f"Average rating: **{avg_rating:.1f}/5**."
     return summary
+
+def build_prof_recommendation_table(df):
+    tag_cols = [c for c in df.columns if c not in [
+        'professor_name', 'school_name', 'dept_category', 'comments',
+        'clean_comments', 'sentiment', 'student_star', 'aspects',
+        'primary_aspect', 'kmeans_cluster', 'cluster_name', 'comment_length'
+    ] and df[c].dtype in ['int64', 'float64', 'bool']]
+    
+    agg_dict = {col: 'sum' for col in tag_cols}
+    agg_dict['student_star'] = 'mean'
+    
+    prof_table = df.groupby(['professor_name', 'school_name', 'dept_category']).agg(agg_dict).reset_index()
+    prof_table = prof_table.rename(columns={
+        'dept_category': 'department_name',
+        'student_star': 'avg_star_rating'
+    })
+    return prof_table
+
+def recommend_professors(prefer_clear_grading=True, prefer_good_lectures=True,
+                         prefer_caring=True, avoid_homework=True,
+                         avoid_tests=True, top_k=5):
+    temp = build_prof_recommendation_table(df).copy()
+    score = pd.Series(0.0, index=temp.index)
+
+    if prefer_clear_grading and "clear_grading_criteria" in temp.columns:
+        score += temp["clear_grading_criteria"] * 2
+    if prefer_good_lectures and "amazing_lectures" in temp.columns:
+        score += temp["amazing_lectures"] * 2
+    if prefer_caring:
+        if "caring" in temp.columns:
+            score += temp["caring"] * 2
+        if "gives_good_feedback" in temp.columns:
+            score += temp["gives_good_feedback"] * 1.5
+        if "accessible_outside_class" in temp.columns:
+            score += temp["accessible_outside_class"] * 1
+    if avoid_homework and "lots_of_homework" in temp.columns:
+        score -= temp["lots_of_homework"] * 2
+    if avoid_tests:
+        if "test_heavy" in temp.columns:
+            score -= temp["test_heavy"] * 2
+        if "tough_grader" in temp.columns:
+            score -= temp["tough_grader"] * 1.5
+    if "avg_star_rating" in temp.columns:
+        score += temp["avg_star_rating"] * 0.5
+
+    temp["recommendation_score"] = score.round(2)
+    temp = temp.sort_values("recommendation_score", ascending=False).head(top_k)
+
+    cols_to_show = ["professor_name", "school_name", "department_name", "recommendation_score", "avg_star_rating"]
+    for col in ["clear_grading_criteria", "amazing_lectures", "caring", "lots_of_homework", "test_heavy", "tough_grader"]:
+        if col in temp.columns:
+            cols_to_show.append(col)
+    return temp[cols_to_show]
     
 df    = load_data()
 model, tfidf = load_models()
@@ -90,7 +143,8 @@ page = st.sidebar.radio("Navigate", [
     "💬 Chatbot",
     "🔮 Sentiment Predictor",
     "📊 Analytics",
-    "🏆 Professor Recommender"
+    "🏆 Professor Recommender",
+    "🎯 Recommendation Support"
 ])
 
 st.sidebar.markdown("---")
@@ -583,3 +637,30 @@ elif page == "🏆 Professor Recommender":
         col3.metric("% Positive", f"{(prof_reviews['sentiment']=='positive').mean()*100:.0f}%")
 
         st.dataframe(prof_reviews, use_container_width=True)
+# ================================================================
+# PAGE 5: RECOMMENDATION SUPPORT
+# ================================================================
+elif page == "🎯 Recommendation Support":
+    st.title("🎯 Recommendation Support")
+    st.markdown("Select your preferences and the system will recommend professors that best match your needs.")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        prefer_clear_grading = st.checkbox("Clear grading criteria", value=True)
+        prefer_good_lectures = st.checkbox("Good lectures", value=True)
+        prefer_caring = st.checkbox("Caring/supportive", value=True)
+    with col2:
+        avoid_homework = st.checkbox("Avoid lots of homework", value=True)
+        avoid_tests = st.checkbox("Avoid test-heavy teaching", value=True)
+
+    if st.button("Recommend Professor Profiles"):
+        recs = recommend_professors(
+            prefer_clear_grading=prefer_clear_grading,
+            prefer_good_lectures=prefer_good_lectures,
+            prefer_caring=prefer_caring,
+            avoid_homework=avoid_homework,
+            avoid_tests=avoid_tests,
+            top_k=5
+        )
+        st.dataframe(recs, use_container_width=True)
+        st.info("Scores are based on aggregated tag counts from student reviews, weighted by your preferences.")
